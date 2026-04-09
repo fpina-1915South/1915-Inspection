@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>1915 South — Order Inspection</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,system-ui,'Helvetica Neue',sans-serif;background:#D8E4EE;color:#1E293B;padding-bottom:40px;}
+
+/* ── STICKY HEADER ── */
+#hdr{position:sticky;top:0;z-index:100;background:#1E3A5F;padding:8px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.brand{color:white;font-size:14px;font-weight:800;letter-spacing:-.3px;padding-right:12px;border-right:1px solid rgba(255,255,255,.2);flex-shrink:0;}
+.brand em{color:#F59E0B;font-style:normal;}
+.hfields{display:flex;flex-wrap:wrap;gap:7px;flex:1;}
+.hf{display:flex;align-items:center;gap:5px;}
+.hf label{color:rgba(255,255,255,.6);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.hf input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:5px;color:white;padding:5px 8px;font-size:12px;font-family:inherit;width:130px;}
+.hf input::placeholder{color:rgba(255,255,255,.3);}
+.hf input:focus{outline:none;border-color:#F59E0B;background:rgba(255,255,255,.18);}
+
+/* ── PAGE BODY ── */
+.doc{max-width:960px;margin:14px auto;padding:0 12px;display:flex;flex-direction:column;gap:10px;}
+
+/* ── SECTION ── */
+.sec{background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.1);}
+.sec-hd{background:#1E3A5F;padding:7px 14px;}
+.sec-hd h2{color:white;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.sec-hd.ora{background:#D97706;}
+.sec-hd.rust{background:#92400E;}
+.sec-bd{padding:12px 13px;}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.gcol{display:flex;flex-direction:column;gap:8px;}
+
+/* ── FIELDS ── */
+.fld{display:flex;flex-direction:column;gap:3px;}
+.fld>label{font-size:9.5px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;}
+.fld input[type=text],.fld input[type=number],.fld textarea{
+  border:1px solid #DDE8F2;border-radius:7px;padding:7px 10px;font-size:13px;
+  font-family:inherit;color:#1E293B;background:#FAFCFE;width:100%;
+}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:#1E3A5F;background:white;box-shadow:0 0 0 3px rgba(30,58,95,.07);}
+.fld textarea{resize:none;height:52px;}
+
+/* months suffix */
+.months-wrap{display:flex;align-items:center;gap:6px;}
+.months-wrap input{flex:1;}
+.months-wrap span{font-size:12px;color:#64748B;white-space:nowrap;font-weight:600;}
+
+.inline-fields{display:flex;gap:8px;align-items:flex-end;}
+.inline-fields .fld{flex:1;}
+
+/* ── PILLS ── */
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.pill{padding:6px 12px;font-size:12px;font-weight:500;border:1.5px solid #CBD5E1;background:white;border-radius:16px;cursor:pointer;font-family:inherit;color:#475569;transition:all .12s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+.pill:active{transform:scale(.96);}
+.pill.on{background:#1E3A5F;border-color:#1E3A5F;color:white;}
+.pill-static{padding:6px 14px;font-size:12px;font-weight:600;background:#EEF5FF;border:1.5px solid #BFDBFE;border-radius:16px;color:#1E3A5F;display:inline-block;}
+
+/* ── CHECKBOXES ── */
+.cks{display:flex;flex-direction:column;gap:5px;}
+.ck{display:flex;align-items:flex-start;gap:7px;cursor:pointer;padding:2px 0;}
+.ck input[type=checkbox]{width:17px;height:17px;accent-color:#1E3A5F;cursor:pointer;flex-shrink:0;margin-top:1.5px;}
+.ck span{font-size:12.5px;color:#334155;line-height:1.35;}
+
+/* inline checkbox row */
+.ck-row{display:flex;flex-wrap:wrap;gap:6px 16px;}
+.ck-row .ck{padding:4px 0;}
+
+/* ── MANAGER BOX ── */
+.mb{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;}
+.mb h3{font-size:9px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;}
+.mb .ck span{color:#92400E;font-weight:600;font-size:12px;}
+
+/* ── SIGN-OFF ── */
+.so-sa{background:#EEF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:11px;}
+.so-mg{background:#FFFBEB;border:2px solid #FCD34D;border-radius:8px;padding:11px;}
+.so-nt{background:#F8FAFC;border:1px solid #CBD5E1;border-radius:8px;padding:11px;}
+.so-sa h3{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1E3A5F;margin-bottom:8px;}
+.so-mg h3{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#D97706;margin-bottom:8px;}
+.so-nt h3{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748B;margin-bottom:8px;}
+.disc{font-size:10.5px;color:#94A3B8;text-align:center;padding:10px;background:#F8FAFC;border:1px solid #E2EAF3;border-radius:6px;line-height:1.55;margin-top:10px;}
+
+/* ══════════════════════════════
+   INLINE SECTIONAL SKETCH
+══════════════════════════════ */
+.sketch-wrap{display:flex;flex-direction:column;border:1px solid #DDE8F2;border-radius:8px;overflow:hidden;height:520px;}
+.g2-lr{display:grid;grid-template-columns:1fr 1.45fr;gap:12px;}
+.sketch-hd{background:#1E3A5F;padding:5px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sketch-hd h3{color:white;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
+.sketch-hd button{padding:3px 9px;font-size:10px;border:1px solid rgba(255,255,255,.3);background:transparent;color:white;border-radius:5px;cursor:pointer;font-family:inherit;}
+.sketch-hd button:hover{background:rgba(255,255,255,.14);}
+.pal-strip{background:#EBF2FA;border-bottom:1px solid #C8D8E8;flex-shrink:0;}
+.pal-inner{display:flex;gap:4px;padding:5px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.pal-inner::-webkit-scrollbar{height:3px;}
+.pal-inner::-webkit-scrollbar-thumb{background:#C8D8E8;border-radius:2px;}
+.pt{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 5px 3px;background:white;border:1px solid #C8D8E6;border-radius:6px;cursor:grab;touch-action:none;user-select:none;flex-shrink:0;transition:border-color .1s;}
+.pt:hover{border-color:#1E3A5F;}
+.pt svg{display:block;pointer-events:none;}
+.pt .pl{font-size:7px;color:#475569;text-align:center;white-space:nowrap;pointer-events:none;}
+.sketch-cvs{flex:1;position:relative;overflow:hidden;
+  background-image:linear-gradient(rgba(30,58,95,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(30,58,95,.07) 1px,transparent 1px);
+  background-size:20px 20px;background-color:#F7FBFE;}
+.cvs-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .3s;}
+.cvs-hint p{font-size:11px;color:#C0D0DC;text-align:center;line-height:1.6;}
+.sketch-foot{background:#EBF2FA;border-top:1px solid #C8D8E8;padding:3px 9px;font-size:9px;color:#64748B;flex-shrink:0;}
+
+/* Placed pieces */
+.pw{position:absolute;touch-action:none;user-select:none;cursor:move;}
+.pw.sel .svgw{outline:2px solid #D97706;outline-offset:2px;border-radius:2px;filter:drop-shadow(0 0 4px rgba(30,58,95,.5));}
+.svgw{pointer-events:none;display:block;}
+.pctls{position:absolute;top:-18px;right:0;display:none;gap:3px;z-index:30;}
+.pw.sel .pctls{display:flex;}
+.pcb{width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.pcb.ro{background:#D97706;color:white;}
+.pcb.dl{background:#DC2626;color:white;}
+
+/* Ghost — piece image + name label */
+.ghost-el{position:fixed;pointer-events:none;opacity:.72;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.ghost-lbl{font-size:10px;font-weight:700;color:#1E3A5F;background:white;border:1.5px solid #1E3A5F;border-radius:5px;padding:2px 8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.18);}
+
+/* ── NEW INSPECTION BUTTON ── */
+.new-btn{padding:5px 13px;font-size:11px;font-weight:700;background:#DC2626;border:none;color:white;border-radius:6px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;}
+.new-btn:active{background:#B91C1C;}
+
+/* ── SAVED TOAST ── */
+#save-toast{position:fixed;bottom:20px;right:20px;background:#1E3A5F;color:white;font-size:11px;font-weight:600;padding:7px 14px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+#save-toast.show{opacity:1;}
+
+@media print{
+  .new-btn,#save-toast{display:none!important;}
+}
+@media print{
+  #hdr input{color:white!important;}
+  .sec{break-inside:avoid;box-shadow:none;border:1px solid #CBD5E1;}
+  .sec-hd,.sec-hd.ora,.sec-hd.rust{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .mb{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .sketch-wrap{height:260px;}
+  body{background:white;padding:0;}
+  .ghost-el{display:none;}
+}
+@media(max-width:680px){
+  .g2,.g3{grid-template-columns:1fr;}
+  .sketch-wrap{height:300px;}
+}
+</style>
+</head>
+<body>
+
+<!-- STICKY ORDER HEADER -->
+<div id="hdr">
+  <div class="brand">1915 <em>South</em></div>
+  <div class="hfields">
+    <div class="hf"><label>Sales Order</label><input type="text" placeholder="SO-XXXXXXX"></div>
+    <div class="hf"><label>Customer</label><input type="text" placeholder="Customer name" style="width:170px;"></div>
+    <div class="hf"><label>Date</label><input type="text" placeholder="MM/DD/YYYY" style="width:110px;"></div>
+    <div class="hf"><label>Store</label><input type="text" placeholder="Store name / #" style="width:130px;"></div>
+  </div>
+  <button class="new-btn" onclick="newInspection()">+ New Inspection</button>
+</div>
+
+<div id="save-toast">✓ Saved</div>
+
+<!-- ══ LIVING ROOM ══ -->
+<div class="sec">
+  <div class="sec-hd"><h2>Living Room</h2></div>
+  <div class="sec-bd">
+    <div class="g2">
+      <div class="gcol">
+        <div class="cks">
+          <label class="ck"><input type="checkbox"><span>Power / Non-Power / Both confirmed on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Measurements verified — room fit confirmed</span></label>
+          <label class="ck"><input type="checkbox"><span>Sofa Sleeper: doorways, elevators, stairs, hallways min. 32"</span></label>
+          <label class="ck"><input type="checkbox"><span>Color confirmed and noted below</span></label>
+          <label class="ck"><input type="checkbox"><span>Configuration matches customer selection (LAF / RAF)</span></label>
+          <label class="ck"><input type="checkbox"><span>Sectional layout sketched and verified below</span></label>
+        </div>
+        <div class="fld"><label>Color</label><input type="text" placeholder="Color name / SKU"></div>
+        <div class="fld">
+          <label>Power Option</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'lr_pwr')">Power</button>
+            <button class="pill" onclick="pick(this,'lr_pwr')">Non-Power</button>
+            <button class="pill" onclick="pick(this,'lr_pwr')">Both</button>
+          </div>
+        </div>
+      </div>
+      <div class="mb">
+        <h3>Manager Checks</h3>
+        <div class="cks">
+          <label class="ck"><input type="checkbox"><span>Power type confirmed on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Color matches selection on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Config (LAF / RAF) verified on ticket</span></label>
+          <label class="ck"><input type="checkbox"><span>Measurements verified by manager</span></label>
+          <label class="ck"><input type="checkbox"><span>Sofa sleeper clearance confirmed</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTIONAL LAYOUT ══ -->
+<div class="sec">
+  <div class="sec-hd"><h2>Sectional Layout</h2></div>
+  <div class="sketch-wrap" style="height:660px;border-radius:0;border:none;">
+    <div class="sketch-hd">
+      <h3>Drag &amp; drop pieces to build the layout — tap placed piece to rotate or delete</h3>
+      <button onclick="clearCvs()">Clear canvas</button>
+    </div>
+    <div class="pal-strip">
+      <div class="pal-inner" id="pal"></div>
+    </div>
+    <div class="sketch-cvs" id="cvs">
+      <div class="cvs-hint" id="hint"><p>Drag pieces from the library above onto the canvas<br>to map out the customer's sectional configuration</p></div>
+    </div>
+    <div class="sketch-foot" id="pcount">0 pieces placed · tap to select · ↻ rotate · ✕ remove</div>
+  </div>
+</div>
+
+<!-- ══ DINING ROOM ══ -->
+<div class="sec">
+  <div class="sec-hd"><h2>Dining Room</h2></div>
+  <div class="sec-bd">
+    <div class="g2">
+      <div class="gcol">
+        <div class="cks">
+          <label class="ck"><input type="checkbox"><span>Table height verified on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Chair count confirmed on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Bench count confirmed if applicable</span></label>
+        </div>
+        <div class="fld">
+          <label>Table Height</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'dr_ht')">Table (18")</button>
+            <button class="pill" onclick="pick(this,'dr_ht')">Counter (36")</button>
+            <button class="pill" onclick="pick(this,'dr_ht')">Bar (42")</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Chair / Stool Height</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'dr_chr_ht')">Standard Chair (18")</button>
+            <button class="pill" onclick="pick(this,'dr_chr_ht')">Counter Chair (30")</button>
+            <button class="pill" onclick="pick(this,'dr_chr_ht')">Barstool (24")</button>
+          </div>
+        </div>
+      </div>
+      <div class="gcol">
+        <div class="fld"><label># of Side Chairs</label><input type="number" min="0" placeholder="0" style="max-width:100px;"></div>
+        <div class="fld"><label># of Arm Chairs</label><input type="number" min="0" placeholder="0" style="max-width:100px;"></div>
+        <div class="fld"><label># of Benches</label><input type="number" min="0" placeholder="0" style="max-width:100px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BEDROOM ══ -->
+<div class="sec">
+  <div class="sec-hd"><h2>Bedroom</h2></div>
+  <div class="sec-bd">
+    <div class="g2">
+      <div class="gcol">
+        <div class="fld">
+          <label>Bed Size</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'br_sz')">Twin</button>
+            <button class="pill" onclick="pick(this,'br_sz')">Full</button>
+            <button class="pill" onclick="pick(this,'br_sz')">Queen</button>
+            <button class="pill" onclick="pick(this,'br_sz')">King</button>
+            <button class="pill" onclick="pick(this,'br_sz')">Cal King</button>
+          </div>
+        </div>
+        <div class="inline-fields">
+          <div class="fld"><label># of Night Stands</label><input type="number" min="0" placeholder="0"></div>
+          <label class="ck" style="padding-bottom:8px;"><input type="checkbox"><span>Mirror</span></label>
+          <label class="ck" style="padding-bottom:8px;"><input type="checkbox"><span>Dresser</span></label>
+        </div>
+        <div class="fld">
+          <label>Frame Type</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'br_fr')">Panel</button>
+            <button class="pill" onclick="pick(this,'br_fr')">Poster</button>
+            <button class="pill" onclick="pick(this,'br_fr')">Sleigh</button>
+            <button class="pill" onclick="pick(this,'br_fr')">Upholstered</button>
+            <button class="pill" onclick="pick(this,'br_fr')">Storage</button>
+            <button class="pill" onclick="pick(this,'br_fr')">Platform</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Bed Components</label>
+          <div class="ck-row">
+            <label class="ck"><input type="checkbox"><span>Headboard (HB)</span></label>
+            <label class="ck"><input type="checkbox"><span>Footboard (FB)</span></label>
+            <label class="ck"><input type="checkbox"><span>Rails</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="mb">
+        <h3>Manager Checks</h3>
+        <div class="cks">
+          <label class="ck"><input type="checkbox"><span>Correct qty of night stands on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Mirror SKU present if selected</span></label>
+          <label class="ck"><input type="checkbox"><span>Dresser SKU confirmed on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Frame type matches selection</span></label>
+          <label class="ck"><input type="checkbox"><span>HB / FB / Rails confirmed on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>King bed — 2x Twin XL foundations confirmed</span></label>
+          <label class="ck"><input type="checkbox"><span>Platform/Storage — NO foundations on ticket</span></label>
+          <label class="ck"><input type="checkbox"><span>Storage bed — NO power base on ticket</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BEDDING ══ -->
+<div class="sec">
+  <div class="sec-hd"><h2>Bedding</h2></div>
+  <div class="sec-bd">
+    <div class="g2">
+      <div class="gcol">
+        <!-- Separate size fields to confirm match -->
+        <div class="inline-fields">
+          <div class="fld"><label>Mattress Size</label><input type="text" placeholder="e.g. Queen"></div>
+          <div class="fld"><label>Foundation Size</label><input type="text" placeholder="e.g. Queen"></div>
+        </div>
+        <div class="fld">
+          <label>Mattress Type</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'mat')">Pocketed Coils</button>
+            <button class="pill" onclick="pick(this,'mat')">Hybrid</button>
+            <button class="pill" onclick="pick(this,'mat')">Memory Foam</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Comfort Level</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'comf')">Soft</button>
+            <button class="pill" onclick="pick(this,'comf')">Medium</button>
+            <button class="pill" onclick="pick(this,'comf')">Firm</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Foundation Type</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'fnd')">Standard (9")</button>
+            <button class="pill" onclick="pick(this,'fnd')">Low Profile (5.5")</button>
+            <button class="pill" onclick="pick(this,'fnd')">Bunkie Board (2")</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Power Base</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'pbs')">Head Only</button>
+            <button class="pill" onclick="pick(this,'pbs')">Head &amp; Foot</button>
+            <button class="pill" onclick="pick(this,'pbs')">Head, Foot &amp; Massage</button>
+            <button class="pill" onclick="pick(this,'pbs')">None</button>
+          </div>
+        </div>
+        <div class="fld"><label>Measured Height (slat to top of mattress)</label><input type="text" placeholder='e.g. 24"'></div>
+      </div>
+      <div class="mb">
+        <h3>Manager Checks</h3>
+        <div class="cks">
+          <label class="ck"><input type="checkbox"><span>Mattress size matches foundation size</span></label>
+          <label class="ck"><input type="checkbox"><span>Correct foundation type for frame</span></label>
+          <label class="ck"><input type="checkbox"><span>Height measured — correct foundation ordered</span></label>
+          <label class="ck"><input type="checkbox"><span>King: 2x Twin XL foundations on invoice</span></label>
+          <label class="ck"><input type="checkbox"><span>Platform/Storage: NO foundations on ticket</span></label>
+          <label class="ck"><input type="checkbox"><span>Storage bed: NO power base on ticket</span></label>
+          <label class="ck"><input type="checkbox"><span>Protection plan included (Extend)</span></label>
+          <label class="ck"><input type="checkbox"><span>Pillow / Protector purchase confirmed</span></label>
+          <label class="ck"><input type="checkbox"><span>Finance terms confirmed</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROTECTION / DELIVERY / FINANCE ══ -->
+<div class="sec">
+  <div class="sec-hd ora"><h2>Protection Plan · Delivery · Finance</h2></div>
+  <div class="sec-bd">
+    <div class="g2">
+      <div class="gcol">
+        <div class="fld">
+          <label>Protection Plan (Extend)</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'pp')">Accepted</button>
+            <button class="pill" onclick="pick(this,'pp')">Declined</button>
+          </div>
+        </div>
+        <div class="inline-fields">
+          <div class="fld"><label>Plan SKU on Invoice</label><input type="text" placeholder="SKU"></div>
+          <div class="fld">
+            <label>Plan Term</label>
+            <div style="padding-top:2px;"><span class="pill-static">4 Year</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="gcol">
+        <div class="fld">
+          <label>Delivery Option</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'del')">Premium Delivery</button>
+            <button class="pill" onclick="pick(this,'del')">Doorstep Delivery</button>
+            <button class="pill" onclick="pick(this,'del')">Warehouse Pickup</button>
+          </div>
+        </div>
+        <div class="fld"><label>Est. Delivery Date Booked at POS</label><input type="text" placeholder="MM/DD/YYYY"></div>
+        <div class="fld">
+          <label>Finance Option</label>
+          <div class="pills">
+            <button class="pill" onclick="pick(this,'fin')">Cash</button>
+            <button class="pill" onclick="pick(this,'fin')">Synchrony</button>
+            <button class="pill" onclick="pick(this,'fin')">Wells Fargo</button>
+            <button class="pill" onclick="pick(this,'fin')">Acima (LTO)</button>
+            <button class="pill" onclick="pick(this,'fin')">Other</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Finance Term</label>
+          <div class="months-wrap">
+            <input type="number" min="0" placeholder="e.g. 24">
+            <span>months</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MANAGER SIGN-OFF ══ -->
+<div class="sec">
+  <div class="sec-hd rust"><h2>Manager Sign-Off</h2></div>
+  <div class="sec-bd">
+    <div class="g3">
+      <div class="so-sa">
+        <h3>Sales Associate</h3>
+        <div class="gcol">
+          <div class="fld"><label>Name</label><input type="text" placeholder="Full name"></div>
+          <div class="fld"><label>Initials</label><input type="text" placeholder="XX" style="max-width:64px;"></div>
+        </div>
+      </div>
+      <div class="so-mg">
+        <h3>Manager Sign-Off</h3>
+        <div class="gcol">
+          <div class="fld"><label>Name</label><input type="text" placeholder="Full name"></div>
+          <div class="fld"><label>Initials</label><input type="text" placeholder="XX" style="max-width:64px;"></div>
+          <div class="fld"><label>Date / Time</label><input type="text" placeholder="MM/DD HH:MM"></div>
+        </div>
+      </div>
+      <div class="so-nt">
+        <h3>Manager Notes</h3>
+        <div class="fld"><textarea placeholder="Flags, corrections, or final notes…" style="height:88px;"></textarea></div>
+      </div>
+    </div>
+    <div class="disc">By completing this form the Manager confirms all line items have been verified for accuracy including colors, configurations, quantities, and measurements. This sheet must be retained with the sales order.</div>
+  </div>
+</div>
+
+</div><!-- /doc -->
+
+<script>
+/* PILL PICKER */
+function pick(btn,grp){
+  btn.closest('.pills').querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  queueSave();
+}
+
+/* ══════════════════════════
+   SECTIONAL SKETCH BUILDER
+══════════════════════════ */
+const BLU='#1E3A5F',BG='#C8DCEE',CU='#8BAFC8';
+const AW=10,BH=13;
+
+const R=(x,y,w,h,f,rx=0)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" rx="${rx}"/>`;
+const OUT=(w,h)=>`<rect width="${w}" height="${h}" fill="none" stroke="${BLU}" stroke-width="1.5" rx="2"/>`;
+
+function cush(x,y,cw,ch,n){
+  const g=2,ew=Math.max(1,(cw-(n-1)*g)/n);
+  let s='';for(let i=0;i<n;i++)s+=R(x+i*(ew+g),y,ew,ch,CU,1);
+  return s;
+}
+
+const sofa=(w,h,la,ra)=>{
+  const lx=la?AW:0,rw=ra?AW:0,sw=w-lx-rw,nc=sw>80?3:sw>50?2:1;
+  return[R(0,0,w,h,BG),R(0,0,w,BH,BLU),la?R(0,0,AW,h,BLU):'',ra?R(w-AW,0,AW,h,BLU):'',cush(lx+2,BH+2,sw-4,h-BH-4,nc),OUT(w,h)].join('');
+};
+
+function chaise(w,h,left){
+  const ext=26,mH=h-ext;let s=[R(0,0,w,h,BG)];
+  if(left){s.push(R(0,0,w,BH,BLU),R(0,0,AW,h,BLU),R(w-AW,ext,AW,h-ext,BLU),cush(AW+2,BH+2,w-AW-6,mH-BH-2,2),cush(AW+2,mH+2,w-AW*2-4,ext-4,1));}
+  else{s.push(R(0,0,w,BH,BLU),R(w-AW,0,AW,h,BLU),R(0,ext,AW,h-ext,BLU),cush(4,BH+2,w-AW-6,mH-BH-2,2),cush(4,mH+2,w-AW*2-4,ext-4,1));}
+  s.push(OUT(w,h));return s.join('');
+}
+
+function cuddler(w,h,left){
+  let s=[R(0,0,w,h,BG),R(0,0,w,BH,BLU)];
+  if(left){s.push(R(0,0,AW,h,BLU),`<path d="M ${AW} ${BH+2} Q ${w*.5} ${h*.88} ${w-2} ${h-2} L ${AW} ${h-2} Z" fill="${CU}"/>`);}
+  else{s.push(R(w-AW,0,AW,h,BLU),`<path d="M 2 ${h-2} Q ${w*.5} ${h*.88} ${w-AW} ${BH+2} L ${w-AW} ${h-2} Z" fill="${CU}"/>`);}
+  s.push(OUT(w,h));return s.join('');
+}
+
+const wedge=(w,h)=>[R(0,0,w,h,BG),`<polygon points="0,0 ${w},0 ${w/2},${h}" fill="${BLU}" opacity=".85"/>`,`<polygon points="${AW+2},${BH} ${w-AW-2},${BH} ${w/2},${h-8}" fill="${CU}"/>`,OUT(w,h)].join('');
+
+const recl=(w,h,arms)=>{
+  const fh=16;
+  return[R(0,0,w,h-fh,BG),R(0,h-fh,w,fh,'#B8CCD8',2),R(0,0,w,BH,BLU),
+    arms?R(0,0,AW,h-fh,BLU):'',arms?R(w-AW,0,AW,h-fh,BLU):'',
+    R(4,BH+2,w-8,h-fh-BH-4,CU,2),
+    `<text x="${w/2}" y="${h-fh/2+4}" text-anchor="middle" font-size="7" fill="${BLU}" font-family="sans-serif">foot</text>`,
+    `<rect width="${w}" height="${h-fh}" fill="none" stroke="${BLU}" stroke-width="1.5" rx="2"/>`].join('');
+};
+
+const otto=(w,h)=>[R(0,0,w,h,BG),R(0,0,w,4,BLU),R(0,h-4,w,4,BLU),R(0,0,4,h,BLU),R(w-4,0,4,h,BLU),R(5,5,w-10,h-10,CU,2),OUT(w,h)].join('');
+const cons=(w,h)=>[R(0,0,w,h,BLU),R(2,2,w-4,h-4,'#2D5A8E'),`<text x="${w/2}" y="${h/2+4}" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif">CON</text>`,OUT(w,h)].join('');
+
+const PIECES=[
+  {id:'sofa-b',  label:'Sofa',            w:120,h:55,draw:()=>sofa(120,55,true,true)},
+  {id:'laf-sofa',label:'LAF Sofa',         w:110,h:55,draw:()=>sofa(110,55,true,false)},
+  {id:'raf-sofa',label:'RAF Sofa',         w:110,h:55,draw:()=>sofa(110,55,false,true)},
+  {id:'arm-sofa',label:'Armless Sofa',     w:100,h:55,draw:()=>sofa(100,55,false,false)},
+  {id:'slpr',    label:'Arm. Sleeper',     w:100,h:55,draw:()=>sofa(100,55,false,false)+`<text x="50" y="36" text-anchor="middle" font-size="7" fill="${BLU}" font-family="sans-serif">▱ sleeper</text>`},
+  {id:'lvst-b',  label:'Loveseat',         w:82,h:55,draw:()=>sofa(82,55,true,true)},
+  {id:'laf-ls',  label:'LAF Loveseat',     w:76,h:55,draw:()=>sofa(76,55,true,false)},
+  {id:'raf-ls',  label:'RAF Loveseat',     w:76,h:55,draw:()=>sofa(76,55,false,true)},
+  {id:'arm-ls',  label:'Arm. Loveseat',    w:70,h:55,draw:()=>sofa(70,55,false,false)},
+  {id:'chr-b',   label:'Chair',            w:55,h:54,draw:()=>sofa(55,54,true,true)},
+  {id:'laf-chr', label:'LAF Chair',        w:52,h:54,draw:()=>sofa(52,54,true,false)},
+  {id:'raf-chr', label:'RAF Chair',        w:52,h:54,draw:()=>sofa(52,54,false,true)},
+  {id:'arm-chr', label:'Arm. Chair',       w:46,h:54,draw:()=>sofa(46,54,false,false)},
+  {id:'acc-chr', label:'Accent Chair',     w:48,h:48,draw:()=>[R(0,0,48,48,BG),R(0,0,48,BH,BLU),R(0,0,8,48,BLU),R(40,0,8,48,BLU),R(9,BH+2,30,48-BH-4,CU,2),OUT(48,48)].join('')},
+  {id:'laf-chs', label:'LAF Chaise',       w:110,h:78,draw:()=>chaise(110,78,true)},
+  {id:'raf-chs', label:'RAF Chaise',       w:110,h:78,draw:()=>chaise(110,78,false)},
+  {id:'laf-cud', label:'LAF Cuddler',      w:72,h:72,draw:()=>cuddler(72,72,true)},
+  {id:'raf-cud', label:'RAF Cuddler',      w:72,h:72,draw:()=>cuddler(72,72,false)},
+  {id:'wedge',   label:'Wedge',            w:64,h:64,draw:()=>wedge(64,64)},
+  {id:'console', label:'Console',          w:28,h:54,draw:()=>cons(28,54)},
+  {id:'recl',    label:'Recliner',         w:58,h:68,draw:()=>recl(58,68,true)},
+  {id:'arm-rcl', label:'Arm. Recliner',    w:52,h:65,draw:()=>recl(52,65,false)},
+  {id:'otto',    label:'Ottoman',          w:60,h:40,draw:()=>otto(60,40)},
+];
+
+const SNAP=20,SC=1.4;
+let placed=[],selId=null,ghost=null,dragD=null,nid=0;
+const snap=v=>Math.round(v/SNAP)*SNAP;
+
+function mkSVG(p,s=1,showLabel=false){
+  const w=Math.round(p.w*s),h=Math.round(p.h*s);
+  let lbl='';
+  if(showLabel && p.id!=='console'){
+    const cx=p.w/2;
+    const cy=BH+(p.h-BH)/2+4;
+    const fs=Math.min(9,Math.max(6,p.w/Math.max(1,p.label.length)*0.9));
+    const tw=Math.min(p.w-6, p.label.length*fs*0.63+8);
+    const th=fs+5;
+    lbl=`<rect x="${cx-tw/2}" y="${cy-fs-1}" width="${tw}" height="${th}" fill="white" opacity=".8" rx="2"/>`+
+        `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="${fs}" fill="${BLU}" font-family="-apple-system,sans-serif" font-weight="700">${p.label}</text>`;
+  }
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${p.w} ${p.h}" xmlns="http://www.w3.org/2000/svg">${p.draw()}${lbl}</svg>`;
+}
+
+/* normalise touch / mouse / pointer coords */
+function coords(e){
+  const t=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0])||e;
+  return {x:t.clientX||0,y:t.clientY||0};
+}
+
+function buildPal(){
+  const pal=document.getElementById('pal');
+  PIECES.forEach(p=>{
+    const d=document.createElement('div');d.className='pt';
+    d.innerHTML=mkSVG(p,.52)+`<span class="pl">${p.label}</span>`;
+    d.addEventListener('touchstart',e=>startPal(e,p),{passive:false});
+    d.addEventListener('mousedown',e=>startPal(e,p));
+    pal.appendChild(d);
+  });
+}
+
+function updCount(){
+  const n=placed.length;
+  document.getElementById('pcount').textContent=n?`${n} piece${n!==1?'s':''} placed · tap to select · ↻ rotate · ✕ remove`:'0 pieces placed';
+  document.getElementById('hint').style.opacity=n?'0':'1';
+}
+
+function render(){
+  document.querySelectorAll('.pw').forEach(e=>e.remove());
+  placed.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='pw'+(p.id===selId?' sel':'');
+    d.dataset.pid=p.id;
+    d.style.cssText=`left:${p.x}px;top:${p.y}px;transform:rotate(${p.rot}deg);transform-origin:center;`;
+    const sw=document.createElement('div');sw.className='svgw';sw.innerHTML=mkSVG(p.piece,SC,true);d.appendChild(sw);
+    const ct=document.createElement('div');ct.className='pctls';
+    const rb=document.createElement('button');rb.className='pcb ro';rb.innerHTML='↻';
+    rb.addEventListener('touchstart',e=>{e.stopPropagation();rotP(p.id);},{passive:false});
+    rb.addEventListener('mousedown',e=>{e.stopPropagation();rotP(p.id);});
+    const db=document.createElement('button');db.className='pcb dl';db.innerHTML='✕';
+    db.addEventListener('touchstart',e=>{e.stopPropagation();delP(p.id);},{passive:false});
+    db.addEventListener('mousedown',e=>{e.stopPropagation();delP(p.id);});
+    ct.append(rb,db);d.appendChild(ct);
+    d.addEventListener('touchstart',e=>startMove(e,p.id),{passive:false});
+    d.addEventListener('mousedown',e=>startMove(e,p.id));
+    document.getElementById('cvs').appendChild(d);
+  });
+  updCount();
+}
+
+/* Ghost shows piece SVG with label + name badge below */
+function makeGhost(piece){
+  const g=document.createElement('div');
+  g.className='ghost-el';
+  g.innerHTML=mkSVG(piece,SC,true)+`<div class="ghost-lbl">${piece.label}</div>`;
+  return g;
+}
+
+function startPal(e,piece){
+  e.preventDefault();selId=null;
+  ghost=makeGhost(piece);
+  document.body.appendChild(ghost);
+  dragD={type:'new',piece};
+  const {x,y}=coords(e);
+  moveG(x,y,piece);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+function startMove(e,pid){
+  e.preventDefault();e.stopPropagation();selId=pid;render();
+  const p=placed.find(x=>x.id===pid);if(!p)return;
+  const {x,y}=coords(e);
+  dragD={type:'mv',pid,sx:x,sy:y,ox:p.x,oy:p.y};
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+function moveG(cx,cy,piece){
+  if(!ghost)return;
+  ghost.style.left=(cx-piece.w*SC/2)+'px';
+  ghost.style.top=(cy-piece.h*SC/2)+'px';
+}
+
+function onMove(e){
+  if(!dragD)return;
+  e.preventDefault();
+  const {x,y}=coords(e);
+  if(dragD.type==='new'){moveG(x,y,dragD.piece);}
+  else if(dragD.type==='mv'){
+    const p=placed.find(x=>x.id===dragD.pid);if(!p)return;
+    p.x=Math.max(0,snap(dragD.ox+x-dragD.sx));
+    p.y=Math.max(0,snap(dragD.oy+y-dragD.sy));
+    const el=document.querySelector(`.pw[data-pid="${dragD.pid}"]`);
+    if(el){el.style.left=p.x+'px';el.style.top=p.y+'px';}
+  }
+}
+
+function onUp(e){
+  document.removeEventListener('touchmove',onMove);
+  document.removeEventListener('touchend',onUp);
+  document.removeEventListener('mousemove',onMove);
+  document.removeEventListener('mouseup',onUp);
+  if(dragD&&dragD.type==='new'){
+    const cvs=document.getElementById('cvs'),rect=cvs.getBoundingClientRect();
+    const {x,y}=coords(e);
+    const cx=x-rect.left,cy=y-rect.top;
+    if(cx>0&&cy>0&&cx<rect.width&&cy<rect.height){
+      const np={id:nid++,piece:dragD.piece,x:Math.max(0,snap(cx-dragD.piece.w*SC/2)),y:Math.max(0,snap(cy-dragD.piece.h*SC/2)),rot:0};
+      placed.push(np);selId=np.id;render();queueSave();
+    }
+    if(ghost){ghost.remove();ghost=null;}
+  }else if(dragD&&dragD.type==='mv'){render();queueSave();}
+  dragD=null;
+}
+
+function rotP(pid){const p=placed.find(x=>x.id===pid);if(p){p.rot=(p.rot+90)%360;render();queueSave();}}
+function delP(pid){placed=placed.filter(x=>x.id!==pid);if(selId===pid)selId=null;render();queueSave();}
+function clearCvs(){placed=[];selId=null;render();queueSave();}
+
+function onCvsDeselect(e){
+  if(e.target===document.getElementById('cvs')||e.target.closest('.cvs-hint')){selId=null;render();}
+}
+document.getElementById('cvs').addEventListener('touchstart',onCvsDeselect,{passive:false});
+document.getElementById('cvs').addEventListener('mousedown',onCvsDeselect);
+
+buildPal();
+render();
+
+/* ══════════════════════════
+   AUTO-SAVE & RESTORE
+══════════════════════════ */
+const SK='1915_insp';
+let saveTimer=null;
+
+function saveForm(){
+  const state={};
+  // Text / number inputs and textareas
+  state.inputs=Array.from(document.querySelectorAll('input[type=text],input[type=number],textarea')).map(el=>el.value);
+  // Checkboxes
+  state.checks=Array.from(document.querySelectorAll('input[type=checkbox]')).map(el=>el.checked);
+  // Pills — store selected text per group
+  state.pills={};
+  document.querySelectorAll('.pill.on').forEach(pill=>{
+    const m=(pill.getAttribute('onclick')||'').match(/pick\(this,'([^']+)'\)/);
+    if(m) state.pills[m[1]]=pill.textContent.trim();
+  });
+  // Sectional sketch
+  state.placed=placed.map(p=>({pid:p.piece.id,x:p.x,y:p.y,rot:p.rot,id:p.id}));
+  state.nid=nid;
+  try{
+    localStorage.setItem(SK,JSON.stringify(state));
+    showToast();
+  }catch(e){console.warn('Save failed',e);}
+}
+
+function showToast(){
+  const t=document.getElementById('save-toast');
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function restoreForm(){
+  let raw;
+  try{raw=localStorage.getItem(SK);}catch(e){return;}
+  if(!raw) return;
+  try{
+    const s=JSON.parse(raw);
+    // Inputs
+    const inputs=document.querySelectorAll('input[type=text],input[type=number],textarea');
+    (s.inputs||[]).forEach((v,i)=>{if(inputs[i]) inputs[i].value=v;});
+    // Checkboxes
+    const checks=document.querySelectorAll('input[type=checkbox]');
+    (s.checks||[]).forEach((v,i)=>{if(checks[i]) checks[i].checked=v;});
+    // Pills
+    Object.entries(s.pills||{}).forEach(([grp,txt])=>{
+      document.querySelectorAll('.pill').forEach(pill=>{
+        const m=(pill.getAttribute('onclick')||'').match(/pick\(this,'([^']+)'\)/);
+        if(m&&m[1]===grp&&pill.textContent.trim()===txt) pill.classList.add('on');
+      });
+    });
+    // Sketch
+    if(s.placed&&s.placed.length){
+      nid=s.nid||0;
+      placed=s.placed.map(p=>{
+        const piece=PIECES.find(x=>x.id===p.pid);
+        return piece?{id:p.id,piece,x:p.x,y:p.y,rot:p.rot}:null;
+      }).filter(Boolean);
+      render();
+    }
+  }catch(e){console.warn('Restore failed',e);}
+}
+
+function newInspection(){
+  if(!confirm('Start a new inspection?\n\nThis will clear all current data. Make sure you have saved your PDF first.')) return;
+  try{localStorage.removeItem(SK);}catch(e){}
+  document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(el=>el.value='');
+  document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+  document.querySelectorAll('.pill.on').forEach(el=>el.classList.remove('on'));
+  placed=[];selId=null;nid=0;render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveForm,700);
+}
+
+// Auto-save on every form interaction
+document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(el=>el.addEventListener('input',queueSave));
+document.querySelectorAll('input[type=checkbox]').forEach(el=>el.addEventListener('change',queueSave));
+
+// Restore saved state on load
+restoreForm();
+</script>
+</body>
+</html>
