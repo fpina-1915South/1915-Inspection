@@ -168,7 +168,6 @@ body{font-family:-apple-system,system-ui,'Helvetica Neue',sans-serif;background:
 <div id="hdr">
   <div class="brand">1915 <em>South</em></div>
   <div class="hfields">
-    <div class="hf"><label>Sales Order</label><input type="text" placeholder="SO-XXXXXXX"></div>
     <div class="hf"><label>Customer</label><input type="text" placeholder="Customer name" style="width:170px;"></div>
     <div class="hf"><label>Date</label><input type="text" placeholder="MM/DD/YYYY" style="width:110px;"></div>
     <div class="hf"><label>Store</label><input type="text" placeholder="Store name / #" style="width:130px;"></div>
@@ -408,12 +407,9 @@ body{font-family:-apple-system,system-ui,'Helvetica Neue',sans-serif;background:
             <button class="pill" onclick="pick(this,'pp')">Declined</button>
           </div>
         </div>
-        <div class="inline-fields">
-          <div class="fld"><label>Plan SKU on Invoice</label><input type="text" placeholder="SKU"></div>
-          <div class="fld">
-            <label>Plan Term</label>
-            <div style="padding-top:2px;"><span class="pill-static">4 Year</span></div>
-          </div>
+        <div class="fld">
+          <label>Plan Term</label>
+          <div style="padding-top:2px;"><span class="pill-static">4 Year</span></div>
         </div>
       </div>
       <div class="gcol">
@@ -508,20 +504,93 @@ const sofa=(w,h,la,ra)=>{
 };
 
 function chaise(w,h,left){
-  const ext=26,mH=h-ext;let s=[R(0,0,w,h,BG)];
-  if(left){s.push(R(0,0,w,BH,BLU),R(0,0,AW,h,BLU),R(w-AW,ext,AW,h-ext,BLU),cush(AW+2,BH+2,w-AW-6,mH-BH-2,2),cush(AW+2,mH+2,w-AW*2-4,ext-4,1));}
-  else{s.push(R(0,0,w,BH,BLU),R(w-AW,0,AW,h,BLU),R(0,ext,AW,h-ext,BLU),cush(4,BH+2,w-AW-6,mH-BH-2,2),cush(4,mH+2,w-AW*2-4,ext-4,1));}
-  s.push(OUT(w,h));return s.join('');
+  /* L-shaped chaise. Arm/end side = dark solid. Attach side = plain light blue, no border lines. */
+  const aw=AW, bt=BH, ext=Math.round(h*0.44);
+  const LBGA='#DCE9F5'; /* lighter blue for attach zone */
+  let s=[];
+  if(left){
+    /* LAF: LEFT=end/arm solid, RIGHT top = attach (light blue, no lines) */
+    /* base fill for whole piece */
+    s.push(R(0,0,w,h,BG));
+    /* attach zone — upper right column — lighter, borderless */
+    s.push(R(w-aw,bt,aw,h-ext-bt,LBGA));
+    /* back bar */
+    s.push(R(0,0,w,bt,BLU));
+    /* left arm */
+    s.push(R(0,0,aw,h,BLU));
+    /* lower-right arm stub */
+    s.push(R(w-aw,ext,aw,h-ext,BLU));
+    /* seat cushions upper */
+    s.push(cush(aw+2,bt+2,w-aw*2-4,h-ext-bt-4,2));
+    /* seat cushion lower chaise */
+    s.push(cush(aw+2,h-ext+2,w-aw*2-4,ext-6,1));
+    /* solid border lines — only on end/bottom/lower-right, NOT on right-top attach edge */
+    s.push(`<line x1="0" y1="0" x2="${w}" y2="0" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="0" y1="0" x2="0" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="0" y1="${h}" x2="${w}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="${w}" y1="${ext}" x2="${w}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="${w-aw}" y1="${ext}" x2="${w}" y2="${ext}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="${w-aw}" y1="${ext}" x2="${w-aw}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    /* right-top (attach side) — NO line drawn */
+  } else {
+    /* RAF: RIGHT=end/arm solid, LEFT top = attach (light blue, no lines) */
+    s.push(R(0,0,w,h,BG));
+    s.push(R(0,bt,aw,h-ext-bt,LBGA));
+    s.push(R(0,0,w,bt,BLU));
+    s.push(R(w-aw,0,aw,h,BLU));
+    s.push(R(0,ext,aw,h-ext,BLU));
+    s.push(cush(aw*2+2,bt+2,w-aw*2-4,h-ext-bt-4,2));
+    s.push(cush(aw*2+2,h-ext+2,w-aw*2-4,ext-6,1));
+    s.push(`<line x1="0" y1="0" x2="${w}" y2="0" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="${w}" y1="0" x2="${w}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="0" y1="${h}" x2="${w}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="0" y1="${ext}" x2="0" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="0" y1="${ext}" x2="${aw}" y2="${ext}" stroke="${BLU}" stroke-width="1.5"/>`);
+    s.push(`<line x1="${aw}" y1="${ext}" x2="${aw}" y2="${h}" stroke="${BLU}" stroke-width="1.5"/>`);
+    /* left-top (attach side) — NO line drawn */
+  }
+  return s.join('');
 }
 
 function cuddler(w,h,left){
-  let s=[R(0,0,w,h,BG),R(0,0,w,BH,BLU)];
-  if(left){s.push(R(0,0,AW,h,BLU),`<path d="M ${AW} ${BH+2} Q ${w*.5} ${h*.88} ${w-2} ${h-2} L ${AW} ${h-2} Z" fill="${CU}"/>`);}
-  else{s.push(R(w-AW,0,AW,h,BLU),`<path d="M 2 ${h-2} Q ${w*.5} ${h*.88} ${w-AW} ${BH+2} L ${w-AW} ${h-2} Z" fill="${CU}"/>`);}
-  s.push(OUT(w,h));return s.join('');
+  /* Corner pentagon piece — back on top + one side, diagonal front */
+  const aw=AW, bt=BH;
+  let s=[R(0,0,w,h,BG)];
+  if(left){
+    /* LAF Cuddler: back top + LEFT arm, diagonal from top-right to bottom-left */
+    const pts=`0,0 ${w},0 ${w},${h*0.45} ${w*0.15},${h} 0,${h}`;
+    s.push(`<polygon points="${pts}" fill="${BG}"/>`);
+    s.push(R(0,0,w,bt,BLU));          /* top back */
+    s.push(R(0,0,aw,h,BLU));          /* left arm */
+    /* diagonal front edge accent */
+    s.push(`<line x1="${w}" y1="${h*0.45}" x2="${w*0.15}" y2="${h}" stroke="${BLU}" stroke-width="2"/>`);
+    /* cushion in the usable corner area */
+    s.push(R(aw+3,bt+4,w-aw-12,h-bt-16,CU,3));
+    /* outer border follows pentagon */
+    s.push(`<polygon points="${pts}" fill="none" stroke="${BLU}" stroke-width="1.5"/>`);
+  } else {
+    /* RAF Cuddler: back top + RIGHT arm, diagonal from top-left to bottom-right */
+    const pts=`0,0 ${w},0 ${w},${h} ${w*0.85},${h} 0,${h*0.45}`;
+    s.push(`<polygon points="${pts}" fill="${BG}"/>`);
+    s.push(R(0,0,w,bt,BLU));
+    s.push(R(w-aw,0,aw,h,BLU));
+    s.push(`<line x1="0" y1="${h*0.45}" x2="${w*0.85}" y2="${h}" stroke="${BLU}" stroke-width="2"/>`);
+    s.push(R(8,bt+4,w-aw-12,h-bt-16,CU,3));
+    s.push(`<polygon points="${pts}" fill="none" stroke="${BLU}" stroke-width="1.5"/>`);
+  }
+  return s.join('');
 }
 
-const wedge=(w,h)=>[R(0,0,w,h,BG),`<polygon points="0,0 ${w},0 ${w/2},${h}" fill="${BLU}" opacity=".85"/>`,`<polygon points="${AW+2},${BH} ${w-AW-2},${BH} ${w/2},${h-8}" fill="${CU}"/>`,OUT(w,h)].join('');
+const wedge=(w,h)=>{
+  /* Square corner connector piece with cushion fill */
+  return[
+    R(0,0,w,h,BG),
+    R(0,0,w,BH,BLU),        /* back top */
+    R(0,0,AW,h,BLU),        /* back left side */
+    R(AW+2,BH+2,w-AW-4,h-BH-4,CU,2), /* single seat cushion */
+    OUT(w,h)
+  ].join('');
+};
 
 const recl=(w,h,arms)=>{
   const fh=16;
@@ -550,10 +619,10 @@ const PIECES=[
   {id:'raf-chr', label:'RAF Chair',        w:52,h:54,draw:()=>sofa(52,54,false,true)},
   {id:'arm-chr', label:'Arm. Chair',       w:46,h:54,draw:()=>sofa(46,54,false,false)},
   {id:'acc-chr', label:'Accent Chair',     w:48,h:48,draw:()=>[R(0,0,48,48,BG),R(0,0,48,BH,BLU),R(0,0,8,48,BLU),R(40,0,8,48,BLU),R(9,BH+2,30,48-BH-4,CU,2),OUT(48,48)].join('')},
-  {id:'laf-chs', label:'LAF Chaise',       w:110,h:78,draw:()=>chaise(110,78,true)},
-  {id:'raf-chs', label:'RAF Chaise',       w:110,h:78,draw:()=>chaise(110,78,false)},
-  {id:'laf-cud', label:'LAF Cuddler',      w:72,h:72,draw:()=>cuddler(72,72,true)},
-  {id:'raf-cud', label:'RAF Cuddler',      w:72,h:72,draw:()=>cuddler(72,72,false)},
+  {id:'laf-chs', label:'LAF Chaise',       w:90,h:72,draw:()=>chaise(90,72,true)},
+  {id:'raf-chs', label:'RAF Chaise',       w:90,h:72,draw:()=>chaise(90,72,false)},
+  {id:'laf-cud', label:'LAF Cuddler',      w:78,h:78,draw:()=>cuddler(78,78,true)},
+  {id:'raf-cud', label:'RAF Cuddler',      w:78,h:78,draw:()=>cuddler(78,78,false)},
   {id:'wedge',   label:'Wedge',            w:64,h:64,draw:()=>wedge(64,64)},
   {id:'console', label:'Console',          w:28,h:54,draw:()=>cons(28,54)},
   {id:'recl',    label:'Recliner',         w:58,h:68,draw:()=>recl(58,68,true)},
